@@ -18,6 +18,7 @@
 
 
 ## Project Structure
+```bash
 ├── README.md
 ├── package-lock.json
 ├── package.json
@@ -49,7 +50,7 @@
 │       ├── employee.service.ts
 │       └── tutorial.service.ts
 └── tsconfig.json
-
+```
 
 
 
