@@ -5,6 +5,9 @@ import ICrudRepository from "../interfaces/crud-repository.interface";
 import Employee from "../models/employee.model";
 
 class EmployeeRepository implements ICrudRepository<Employee> {
+  filterBy(searchParams: any): Promise<Employee[]> {
+    throw new Error("Method not implemented.");
+  }
   save(employee: Employee): Promise<Employee> {
     return new Promise((resolve, reject) => {
       connection.query<OkPacket>(
@@ -21,11 +24,21 @@ class EmployeeRepository implements ICrudRepository<Employee> {
     });
   }
 
-  retrieveAll(searchParams: {
-    title: string;
-    published: boolean;
-  }): Promise<Employee[]> {
-    throw new Error("Method not implemented.");
+  retrieveAll(): Promise<Employee[]> {
+    let query: string = "SELECT * FROM employees";
+    // let condition: string = "";
+
+    // if (searchParams?.title)
+    //   condition += `LOWER(title) LIKE '%${searchParams.title}%'`;
+
+    // if (condition.length) query += " WHERE " + condition;
+
+    return new Promise((resolve, reject) => {
+      connection.query<Employee[]>(query, (err, res) => {
+        if (err) reject(err);
+        else resolve(res);
+      });
+    });
   }
 
   retrieveById(id: number): Promise<Employee> {
@@ -41,14 +54,39 @@ class EmployeeRepository implements ICrudRepository<Employee> {
     });
   }
 
-  update(tutorial: Employee): Promise<number> {
-    throw new Error("Method not implemented.");
+  update(employee: Employee): Promise<number> {
+    return new Promise((resolve, reject) => {
+      connection.query<OkPacket>(
+        "UPDATE employees SET title = ?, salary = ? WHERE id = ?",
+        [employee.title, employee.salary, employee.id],
+        (err, res) => {
+          if (err) reject(err);
+          else resolve(res.affectedRows);
+        }
+      );
+    });
   }
-  delete(tutorialId: number): Promise<number> {
-    throw new Error("Method not implemented.");
+
+  delete(id: number): Promise<number> {
+    return new Promise((resolve, reject) => {
+      connection.query<OkPacket>(
+        "DELETE FROM employees WHERE id = ?",
+        [id],
+        (err, res) => {
+          if (err) reject(err);
+          else resolve(res.affectedRows);
+        }
+      );
+    });
   }
+
   deleteAll(): Promise<number> {
-    throw new Error("Method not implemented.");
+    return new Promise((resolve, reject) => {
+      connection.query<OkPacket>("DELETE FROM employees", (err, res) => {
+        if (err) reject(err);
+        else resolve(res.affectedRows);
+      });
+    });
   }
 }
 

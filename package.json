@@ -4,10 +4,9 @@
   "description": "Rest API using Node.js, TypeScript, Express, Mysql",
   "main": "server.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
-    "dev": "node ./build/server.js",
-    "start": "tsc && npm run dev"
+    "dev": "ts-node server.ts",
+    "start": "tsc && node ./build/server.js"
   },
   "keywords": [
     "nodejs",

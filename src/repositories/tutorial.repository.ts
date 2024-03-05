@@ -4,13 +4,28 @@ import connection from "../db";
 import Tutorial from "../models/tutorial.model";
 import ICrudRepository from "../interfaces/crud-repository.interface";
 
-
 class TutorialRepository implements ICrudRepository<Tutorial> {
+
+  retrieveAll(): Promise<Tutorial[]> {
+    let query: string = "SELECT * FROM tutorials";
+    
+    return new Promise((resolve, reject) => {
+      connection.query<Tutorial[]>(query, (err, res) => {
+        if (err) reject(err);
+        else resolve(res);
+      });
+    });
+  }
+
   save(tutorial: Tutorial): Promise<Tutorial> {
     return new Promise((resolve, reject) => {
       connection.query<OkPacket>(
         "INSERT INTO tutorials (title, description, published) VALUES(?,?,?)",
-        [tutorial.title, tutorial.description, tutorial.published ? tutorial.published : false],
+        [
+          tutorial.title,
+          tutorial.description,
+          tutorial.published ? tutorial.published : false,
+        ],
         (err, res) => {
           if (err) reject(err);
           else
@@ -22,18 +37,19 @@ class TutorialRepository implements ICrudRepository<Tutorial> {
     });
   }
 
-  retrieveAll(searchParams: {title?: string, published?: boolean}): Promise<Tutorial[]> {
+  filterBy(searchParams: {
+    title?: string;
+    published?: boolean;
+  }): Promise<Tutorial[]> {
     let query: string = "SELECT * FROM tutorials";
     let condition: string = "";
 
-    if (searchParams?.published)
-      condition += "published = TRUE"
+    if (searchParams?.published) condition += "published = TRUE";
 
     if (searchParams?.title)
-      condition += `LOWER(title) LIKE '%${searchParams.title}%'`
+      condition += `LOWER(title) LIKE '%${searchParams.title}%'`;
 
-    if (condition.length)
-      query += " WHERE " + condition;
+    if (condition.length) query += " WHERE " + condition;
 
     return new Promise((resolve, reject) => {
       connection.query<Tutorial[]>(query, (err, res) => {

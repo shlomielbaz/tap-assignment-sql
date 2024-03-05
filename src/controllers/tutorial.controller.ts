@@ -1,24 +1,24 @@
 import { Request, Response } from "express";
+import tutorialService from "../services/tutorial.service";
 import Tutorial from "../models/tutorial.model";
-import tutorialRepository from "../repositories/tutorial.repository";
 
 export default class TutorialController {
   async create(req: Request, res: Response) {
     if (!req.body.title) {
       res.status(400).send({
-        message: "Content can not be empty!"
+        message: "Content can not be empty!",
       });
       return;
     }
 
     try {
       const tutorial: Tutorial = req.body;
-      const savedTutorial = await tutorialRepository.save(tutorial);
+      const savedTutorial = await tutorialService.create(tutorial);
 
       res.status(201).send(savedTutorial);
     } catch (err) {
       res.status(500).send({
-        message: "Some error occurred while retrieving tutorials."
+        message: "Some error occurred while retrieving tutorials.",
       });
     }
   }
@@ -27,12 +27,12 @@ export default class TutorialController {
     const title = typeof req.query.title === "string" ? req.query.title : "";
 
     try {
-      const tutorials = await tutorialRepository.retrieveAll({ title: title });
+      const tutorials = await tutorialService.findAll(title);
 
       res.status(200).send(tutorials);
     } catch (err) {
       res.status(500).send({
-        message: "Some error occurred while retrieving tutorials."
+        message: "Some error occurred while retrieving tutorials.",
       });
     }
   }
@@ -41,39 +41,39 @@ export default class TutorialController {
     const id: number = parseInt(req.params.id);
 
     try {
-      const tutorial = await tutorialRepository.retrieveById(id);
+      const tutorial = await tutorialService.findOne(id);
 
       if (tutorial) res.status(200).send(tutorial);
       else
         res.status(404).send({
-          message: `Cannot find Tutorial with id=${id}.`
+          message: `Cannot find Tutorial with id=${id}.`,
         });
     } catch (err) {
       res.status(500).send({
-        message: `Error retrieving Tutorial with id=${id}.`
+        message: `Error retrieving Tutorial with id=${id}.`,
       });
     }
   }
 
   async update(req: Request, res: Response) {
-    let tutorial: Tutorial = req.body;
-    tutorial.id = parseInt(req.params.id);
+    const tutorial: Tutorial = req.body;
+    const id = parseInt(req.params.id);
 
     try {
-      const num = await tutorialRepository.update(tutorial);
+      const num = await tutorialService.update(id, tutorial);
 
       if (num == 1) {
         res.send({
-          message: "Tutorial was updated successfully."
+          message: "Tutorial was updated successfully.",
         });
       } else {
         res.send({
-          message: `Cannot update Tutorial with id=${tutorial.id}. Maybe Tutorial was not found or req.body is empty!`
+          message: `Cannot update Tutorial with id=${id}. Maybe Tutorial was not found or req.body is empty!`,
         });
       }
     } catch (err) {
       res.status(500).send({
-        message: `Error updating Tutorial with id=${tutorial.id}.`
+        message: `Error updating Tutorial with id=${id}.`,
       });
     }
   }
@@ -82,11 +82,11 @@ export default class TutorialController {
     const id: number = parseInt(req.params.id);
 
     try {
-      const num = await tutorialRepository.delete(id);
+      const num = await tutorialService.delete(id);
 
       if (num == 1) {
         res.send({
-          message: "Tutorial was deleted successfully!"
+          message: "Tutorial was deleted successfully!",
         });
       } else {
         res.send({
@@ -95,31 +95,31 @@ export default class TutorialController {
       }
     } catch (err) {
       res.status(500).send({
-        message: `Could not delete Tutorial with id==${id}.`
+        message: `Could not delete Tutorial with id==${id}.`,
       });
     }
   }
 
   async deleteAll(req: Request, res: Response) {
     try {
-      const num = await tutorialRepository.deleteAll();
+      const num = await tutorialService.deleteAll();
 
       res.send({ message: `${num} Tutorials were deleted successfully!` });
     } catch (err) {
       res.status(500).send({
-        message: "Some error occurred while removing all tutorials."
+        message: "Some error occurred while removing all tutorials.",
       });
     }
   }
 
   async findAllPublished(req: Request, res: Response) {
     try {
-      const tutorials = await tutorialRepository.retrieveAll({ published: true });
+      const tutorials = await tutorialService.findAll("");
 
       res.status(200).send(tutorials);
     } catch (err) {
       res.status(500).send({
-        message: "Some error occurred while retrieving tutorials."
+        message: "Some error occurred while retrieving tutorials.",
       });
     }
   }
