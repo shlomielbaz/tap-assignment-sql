@@ -1,11 +1,11 @@
 import express, { Application } from "express";
 import cors, { CorsOptions } from "cors";
-import Routes from './routes';
+import router from './routes';
 
 export default class Server {
   constructor(app: Application) {
     this.config(app);
-    new Routes(app);
+    //new Routes(app);
   }
 
   private config(app: Application): void {
@@ -16,5 +16,7 @@ export default class Server {
     app.use(cors(corsOptions));
     app.use(express.json());
     app.use(express.urlencoded({ extended: true }));
+
+    app.use('/api/v1', router);
   }
 }

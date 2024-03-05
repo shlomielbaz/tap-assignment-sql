@@ -9,7 +9,7 @@ const routes_1 = __importDefault(require("./routes"));
 class Server {
     constructor(app) {
         this.config(app);
-        new routes_1.default(app);
+        //new Routes(app);
     }
     config(app) {
         const corsOptions = {
@@ -18,6 +18,7 @@ class Server {
         app.use((0, cors_1.default)(corsOptions));
         app.use(express_1.default.json());
         app.use(express_1.default.urlencoded({ extended: true }));
+        app.use('/api/v1', routes_1.default);
     }
 }
 exports.default = Server;

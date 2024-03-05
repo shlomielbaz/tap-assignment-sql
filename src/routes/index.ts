@@ -1,12 +1,12 @@
-import { Application } from "express";
-import tutorialRoutes from "./tutorial.routes"
+import express, { Application } from "express";
+import tutorialRoutes from "./tutorial.routes";
 import employeeRoutes from "./employee.router";
 import homeRoutes from "./home.routes";
 
-export default class Routes {
-  constructor(app: Application) {
-    app.use("/api", homeRoutes);
-    app.use("/api/tutorials", tutorialRoutes);
-    app.use("/api/employees", employeeRoutes);
-  }
-}
+const router = express.Router();
+
+router.use("/", homeRoutes);
+router.use("/tutorials", tutorialRoutes);
+router.use("/employees", employeeRoutes);
+
+export default router;
